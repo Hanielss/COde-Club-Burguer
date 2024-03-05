@@ -12,7 +12,7 @@ class UserController {
             email: Yup.string().email().required(),
             password: Yup.string().required().min(6),
             admin: Yup.boolean(),
-        })
+        })  
 
          if (!(await schema.isValid(request.body))) {
             return response
@@ -49,3 +49,4 @@ class UserController {
     }
 }
 export default new UserController
+
