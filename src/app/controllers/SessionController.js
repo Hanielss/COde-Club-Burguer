@@ -16,7 +16,7 @@ class SessionController {
             return response
                 .status(400)
                 .json({ error: 'Make sure your email or password are correct' })
-        }
+        }   
 
 
 
