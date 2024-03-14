@@ -1,50 +1,45 @@
-import * as Yup from 'yup'
-import User from '../models/User'
-import jwt from 'jsonwebtoken'
-import authConfig from '../../config/auth'
-
+import * as Yup from 'yup';
+import User from '../models/User';
+import jwt from 'jsonwebtoken';
+import authConfig from '../../config/auth';
 
 class SessionController {
-    async store(request, response) {
-        const schema = Yup.object().shape({
-            email: Yup.string().email().required(),
-            password: Yup.string().required(),
-        })
+  async store(request, response) {
+    const schema = Yup.object().shape({
+      email: Yup.string().email().required(),
+      password: Yup.string().required(),
+    });
 
+    const userEmailOrPasswordIncorrect = () => {
+      return response
+        .status(400)
+        .json({ error: 'Make sure your email or password are correct' });
+    };
 
-        const userEmailOrPasswordIncorrect = () => {
-            return response
-                .status(400)
-                .json({ error: 'Make sure your email or password are correct' })
-        }   
+    if (!(await schema.isValid(request.body))) return userEmailOrPasswordIncorrect();
 
+    const { email, password } = request.body;
 
+    if (!email || !password) return userEmailOrPasswordIncorrect();
 
-        if (!(await schema.isValid(request.body))) userEmailOrPasswordIncorrect()
+    const user = await User.findOne({
+      where: { email },
+    });
 
-        const { email, password } = request.body
+    if (!user) return userEmailOrPasswordIncorrect();
 
-        const user = await User.findOne({
-            where: { email },
+    if (!(await user.checkPassword(password))) return userEmailOrPasswordIncorrect();
 
-        })
-
-        if (!user) userEmailOrPasswordIncorrect()
-
-        if (!(await user.checkPassword(password))) userEmailOrPasswordIncorrect()
-
-
-        return response.json({
-            id: user.id,
-            email,
-            name: user.name,
-            admin: user.adomin,
-            token: jwt.sign({ id: user.id }, authConfig.secret, {
-                expiresIn: authConfig.expiresIn,
-            }),
-
-        })
-    }
+    return response.json({
+      id: user.id,
+      email,
+      name: user.name,
+      admin: user.admin,
+      token: jwt.sign({ id: user.id }, authConfig.secret, {
+        expiresIn: authConfig.expiresIn,
+      }),
+    });
+  }
 }
 
-export default new SessionController
+export default new SessionController();
