@@ -8,13 +8,14 @@ class Category extends Model {
 
             {
                 name: Sequelize.STRING,
-              
+
             },
 
             {
                 sequelize,
             }
         )
+        return this
     }
 
 }
