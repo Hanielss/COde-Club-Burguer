@@ -18,7 +18,6 @@ const OrderSchema = new mongoose.Schema(
         },
         products: [
             {
-
                 id:
                 {
                     type: Number,

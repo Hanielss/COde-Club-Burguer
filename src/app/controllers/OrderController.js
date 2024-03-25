@@ -1,5 +1,6 @@
 
 import * as Yup from 'yup'
+
 import Product from '../models/Product'
 import Category from '../models/Category'
 import Order from '../schemas/order'
@@ -58,7 +59,7 @@ class OrderController {
                 id: product.id,
                 name: product.name,
                 price: product.price,
-                category: product.category,
+                category: product.category.name,
                 url: product.url,
                 quantity: request.body.products[productsIndex].quantity,
             }
